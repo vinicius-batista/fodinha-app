@@ -13,6 +13,7 @@
     "register-service-worker": "^1.6.2",
     "roboto-fontface": "*",
     "vue": "^2.6.10",
+    "vue-function-api": "^2.1.2",
     "vue-router": "^3.0.3",
     "vuetify": "^2.0.0",
     "vuex": "^3.0.1"
