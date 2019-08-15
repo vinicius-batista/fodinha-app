@@ -9,21 +9,19 @@
         >
           <template v-for="player in players">
             <v-list-item :key="player.name">
-              <template v-slot:default="{ active, toggle }">
-                <v-list-item-content>
-                  <v-list-item-title v-text="player.name" />
-                </v-list-item-content>
+              <v-list-item-content>
+                <v-list-item-title v-text="player.name" />
+              </v-list-item-content>
 
-                <v-list-item-action>
-                  <v-rating
-                    v-model="player.lives"
-                    readonly
-                    full-icon="fa-heart"
-                    :length="player.lives"
-                    color="red darken-2"
-                  />
-                </v-list-item-action>
-              </template>
+              <v-list-item-action>
+                <v-rating
+                  v-model="player.lives"
+                  readonly
+                  full-icon="fa-heart"
+                  :length="player.lives"
+                  color="red darken-2"
+                />
+              </v-list-item-action>
             </v-list-item>
           </template>
         </v-list-item-group>
@@ -42,6 +40,7 @@
 import Vue from 'vue'
 import { value, computed } from 'vue-function-api'
 import { useStore } from '../store'
+import { Player } from '../model/Player'
 
 export default Vue.extend({
   setup(props, ctx) {
@@ -50,7 +49,25 @@ export default Vue.extend({
     const players = computed(() => store.state.players)
 
     function nextRound() {
+      const playersRemovedLives = players.value.map(
+        (player, index): Player => {
+          const lostPoint = selected.value.indexOf(index) !== -1
+
+          return {
+            ...player,
+            lives: lostPoint ? player.lives - 1 : player.lives,
+          }
+        }
+      )
+
+      const newPlayers = playersRemovedLives.filter(
+        player => player.lives !== 0
+      )
+      store.commit('setPlayers', newPlayers)
+
+      selected.value = []
       ctx.emit('nextRound', players.value.length)
+      ctx.root.$vuetify.goTo(-20)
     }
 
     return {

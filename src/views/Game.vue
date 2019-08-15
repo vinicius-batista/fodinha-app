@@ -13,6 +13,7 @@ import { value } from 'vue-function-api'
 import GameInfo from '@/components/GameInfo.vue'
 import GamePlayersList from '@/components/GamePlayersList.vue'
 import { useStore } from '../store'
+import { useRouter } from '../router'
 
 export default Vue.extend({
   components: { GameInfo, GamePlayersList },
@@ -22,6 +23,11 @@ export default Vue.extend({
     const isIncrement = value(true)
 
     function updateGameInfo(countPlayers: number) {
+      if (countPlayers <= 2) {
+        const router = useRouter()
+        router.push({ name: 'home' })
+      }
+
       round.value++
       if (isIncrement.value) {
         cards.value++
