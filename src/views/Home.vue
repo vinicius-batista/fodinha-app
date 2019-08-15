@@ -16,9 +16,11 @@
               thumb-label="always"
             />
 
-            <v-text-field
+            <v-autocomplete
               name="jogador"
+              filled
               label="Nome do jogador"
+              :items="names"
               v-model="playerName"
               append-icon="fa-plus"
               @click:append="addPlayer"
@@ -50,6 +52,18 @@ export default Vue.extend({
     const lives = value(3)
     const playerName = value('')
     const players = value<Player[]>([])
+    const names = value([
+      'Adilson',
+      'Batista',
+      'Celso',
+      'Danilo',
+      'Euller',
+      'Lucao',
+      'JMoniz',
+      'JCarlos',
+      'Todynho',
+      'Wendler',
+    ])
 
     function addPlayer() {
       const player = createPlayer(playerName.value)
@@ -80,6 +94,7 @@ export default Vue.extend({
       players,
       addPlayer,
       startGame,
+      names,
     }
   },
 })
