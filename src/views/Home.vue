@@ -2,7 +2,7 @@
   <v-container fluid>
     <v-row>
       <v-col cols="12">
-        <v-card class="pa-2 elevation-4">
+        <v-card class="pa-2" elevation="4">
           <v-card-title class="pb-5 flex justify-center">
             cria esse jogo ai
           </v-card-title>
@@ -40,6 +40,7 @@ import { value } from 'vue-function-api'
 import { Player, createPlayer } from '@/model/Player'
 import PlayersList from '@/components/PlayersList.vue'
 import { useRouter } from '../router'
+import { useStore } from '../store'
 
 export default Vue.extend({
   components: {
@@ -48,7 +49,7 @@ export default Vue.extend({
   setup() {
     const lives = value(3)
     const playerName = value('')
-    const players = value([] as Player[])
+    const players = value<Player[]>([])
 
     function addPlayer() {
       const player = createPlayer(playerName.value)
@@ -58,17 +59,18 @@ export default Vue.extend({
 
     function startGame() {
       players.value = players.value.map(
-        (player, index): Player => {
+        (player): Player => {
           return {
             ...player,
             lives: lives.value,
-            isDealer: index == 0,
           }
         }
       )
 
-      const router = useRouter()
+      const store = useStore()
+      store.commit('setPlayers', players.value)
 
+      const router = useRouter()
       router.push({ name: 'game' })
     }
 
