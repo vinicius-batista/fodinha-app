@@ -66,7 +66,7 @@ export default Vue.extend({
       store.commit('setPlayers', newPlayers)
 
       selected.value = []
-      ctx.emit('nextRound', players.value.length)
+      ctx.emit('nextRound', newPlayers.length)
       ctx.root.$vuetify.goTo(-20)
     }
 
