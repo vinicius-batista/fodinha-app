@@ -2,29 +2,25 @@
   <v-col cols="12">
     <v-card class="border-top" elevation="4">
       <v-list two-line>
-        <v-list-item-group
-          v-model="selected"
-          multiple
-          active-class="primary--text"
-        >
-          <template v-for="player in players">
-            <v-list-item :key="player.name">
-              <v-list-item-content>
-                <v-list-item-title v-text="player.name" />
-              </v-list-item-content>
+        <template v-for="player in game.players">
+          <v-list-item :key="player.name" :inactive="player.lives !== 1">
+            <v-list-item-content>
+              <v-list-item-title v-text="player.name" />
+            </v-list-item-content>
 
-              <v-list-item-action>
-                <v-rating
-                  v-model="player.lives"
-                  readonly
-                  full-icon="fa-heart"
-                  :length="player.lives"
-                  color="red darken-2"
-                />
-              </v-list-item-action>
-            </v-list-item>
-          </template>
-        </v-list-item-group>
+            <v-list-item-action>
+              <v-rating
+                v-model="player.lives"
+                clearable
+                full-icon="fa-heart"
+                empty-icon="far fa-heart"
+                :length="game.totalLives"
+                color="red darken-2"
+                background-color="red lighten-2"
+              />
+            </v-list-item-action>
+          </v-list-item>
+        </template>
       </v-list>
 
       <v-card-actions>
@@ -44,35 +40,19 @@ import { Player } from '../model/Player'
 
 export default Vue.extend({
   setup(props, ctx) {
-    const selected = value<number[]>([])
     const store = useStore()
-    const players = computed(() => store.state.players)
+    const game = computed(() => store.state.game)
 
     function nextRound() {
-      const playersRemovedLives = players.value.map(
-        (player, index): Player => {
-          const lostPoint = selected.value.indexOf(index) !== -1
-
-          return {
-            ...player,
-            lives: lostPoint ? player.lives - 1 : player.lives,
-          }
-        }
-      )
-
-      const newPlayers = playersRemovedLives.filter(
-        player => player.lives !== 0
-      )
+      const newPlayers = game.value.players.filter(player => player.lives !== 0)
       store.commit('setPlayers', newPlayers)
 
-      selected.value = []
       ctx.emit('nextRound', newPlayers.length)
       ctx.root.$vuetify.goTo(-20)
     }
 
     return {
-      selected,
-      players,
+      game,
       nextRound,
     }
   },

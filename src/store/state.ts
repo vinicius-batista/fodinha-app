@@ -1,3 +1,5 @@
+import { createGame } from '@/model/Game'
+
 export default {
-  players: [],
+  game: createGame([]),
 }

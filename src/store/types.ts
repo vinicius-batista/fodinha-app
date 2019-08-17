@@ -1,5 +1,5 @@
-import { Player } from '@/model/Player'
+import { Game } from '@/model/Game'
 
 export type RootState = {
-  players: Player[]
+  game: Game
 }

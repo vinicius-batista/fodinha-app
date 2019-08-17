@@ -22,6 +22,7 @@
               label="Nome do jogador"
               :items="names"
               v-model="playerName"
+              :search-input.sync="searchPlayer"
               append-icon="fa-plus"
               @click:append="addPlayer"
             />
@@ -43,6 +44,7 @@ import { Player, createPlayer } from '@/model/Player'
 import PlayersList from '@/components/PlayersList.vue'
 import { useRouter } from '../router'
 import { useStore } from '../store'
+import { createGame } from '../model/Game'
 
 export default Vue.extend({
   components: {
@@ -51,6 +53,7 @@ export default Vue.extend({
   setup() {
     const lives = value(3)
     const playerName = value('')
+    const searchPlayer = value('')
     const players = value<Player[]>([])
     const names = value([
       'Adilson',
@@ -66,9 +69,16 @@ export default Vue.extend({
     ])
 
     function addPlayer() {
-      const player = createPlayer(playerName.value)
+      if (playerName.value !== '') {
+        const player = createPlayer(playerName.value)
+        players.value = [...players.value, player]
+        playerName.value = ''
+        return
+      }
+
+      const player = createPlayer(searchPlayer.value)
       players.value = [...players.value, player]
-      playerName.value = ''
+      searchPlayer.value = ''
     }
 
     function startGame() {
@@ -81,8 +91,9 @@ export default Vue.extend({
         }
       )
 
+      const game = createGame(players.value, lives.value)
       const store = useStore()
-      store.commit('setPlayers', players.value)
+      store.commit('setGame', game)
 
       const router = useRouter()
       router.push({ name: 'game' })
@@ -95,6 +106,7 @@ export default Vue.extend({
       addPlayer,
       startGame,
       names,
+      searchPlayer,
     }
   },
 })
