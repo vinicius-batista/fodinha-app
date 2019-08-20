@@ -8,6 +8,7 @@
           </div>
           <div class="title mb-2 grey--text text--darken-2">
             {{ cards }} {{ cards === 1 ? 'CARTA' : 'CARTAS' }}
+            <v-icon v-if="isCardsLimited" color="red" size="20">fa-flag</v-icon>
           </div>
         </v-card-text>
       </v-card-text>
@@ -22,6 +23,7 @@ export default Vue.extend({
   props: {
     round: Number,
     cards: Number,
+    isCardsLimited: Boolean,
   },
 })
 </script>

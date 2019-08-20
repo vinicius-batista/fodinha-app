@@ -1,7 +1,7 @@
 <template>
   <v-container fluid>
     <v-row>
-      <GameInfo v-bind="{ round, cards }" />
+      <GameInfo v-bind="{ round, cards, isCardsLimited }" />
       <GamePlayersList @nextRound="updateGameInfo" />
     </v-row>
   </v-container>
@@ -9,7 +9,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import { value } from 'vue-function-api'
+import { value, computed } from 'vue-function-api'
 import GameInfo from '@/components/GameInfo.vue'
 import GamePlayersList from '@/components/GamePlayersList.vue'
 import { useStore } from '../store'
@@ -21,6 +21,7 @@ export default Vue.extend({
     const round = value(1)
     const cards = value(1)
     const isIncrement = value(true)
+    const isCardsLimited = value(false)
 
     function updateGameInfo(countPlayers: number) {
       if (countPlayers <= 2) {
@@ -37,6 +38,7 @@ export default Vue.extend({
           isIncrement.value = false
         }
 
+        isCardsLimited.value = countPlayers * cards.value === 40
         return
       }
 
@@ -46,12 +48,15 @@ export default Vue.extend({
         cards.value = cards.value + 2
         isIncrement.value = true
       }
+
+      isCardsLimited.value = countPlayers * cards.value === 40
     }
 
     return {
       round,
       cards,
       updateGameInfo,
+      isCardsLimited,
     }
   },
 })
