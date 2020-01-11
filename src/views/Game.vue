@@ -1,7 +1,7 @@
 <template>
   <v-container fluid>
     <v-row>
-      <GameInfo v-bind="{ round, cards, isCardsLimited }" />
+      <GameInfo v-bind="state" />
       <GamePlayersList @nextRound="updateGameInfo" />
     </v-row>
   </v-container>
@@ -9,7 +9,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import { value, computed } from 'vue-function-api'
+import { reactive, computed } from '@vue/composition-api'
 import GameInfo from '@/components/GameInfo.vue'
 import GamePlayersList from '@/components/GamePlayersList.vue'
 import { useStore } from '../store'
@@ -18,45 +18,47 @@ import { useRouter } from '../router'
 export default Vue.extend({
   components: { GameInfo, GamePlayersList },
   setup() {
-    const round = value(1)
-    const cards = value(1)
-    const isIncrement = value(true)
-    const isCardsLimited = value(false)
+    const state = reactive({
+      round: 1,
+      cards: 1,
+      isIncrement: true,
+      isCardsLimited: false,
+    })
 
     function updateGameInfo(countPlayers: number) {
       if (countPlayers <= 2) {
+        const store = useStore()
+        store.commit('setPlayers', [])
         const router = useRouter()
         router.push({ name: 'home' })
       }
 
-      round.value++
-      if (isIncrement.value) {
-        cards.value++
+      state.round++
+      if (state.isIncrement) {
+        state.cards++
 
-        if (40 / countPlayers < cards.value) {
-          cards.value = cards.value - 2
-          isIncrement.value = false
+        if (40 / countPlayers < state.cards) {
+          state.cards = state.cards - 2
+          state.isIncrement = false
         }
 
-        isCardsLimited.value = countPlayers * cards.value === 40
+        state.isCardsLimited = countPlayers * state.cards === 40
         return
       }
 
-      cards.value--
+      state.cards--
 
-      if (cards.value == 0) {
-        cards.value = cards.value + 2
-        isIncrement.value = true
+      if (state.cards == 0) {
+        state.cards = state.cards + 2
+        state.isIncrement = true
       }
 
-      isCardsLimited.value = countPlayers * cards.value === 40
+      state.isCardsLimited = countPlayers * state.cards === 40
     }
 
     return {
-      round,
-      cards,
+      state,
       updateGameInfo,
-      isCardsLimited,
     }
   },
 })

@@ -6,9 +6,9 @@ import './registerServiceWorker'
 import vuetify from './plugins/vuetify'
 import 'roboto-fontface/css/roboto/roboto-fontface.css'
 import '@fortawesome/fontawesome-free/css/all.css'
-import { plugin } from 'vue-function-api'
+import VueCompositionApi from '@vue/composition-api'
 
-Vue.use(plugin)
+Vue.use(VueCompositionApi)
 
 Vue.config.productionTip = false
 

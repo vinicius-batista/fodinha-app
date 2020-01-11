@@ -10,7 +10,7 @@
           <v-form class="mt-5" @submit.prevent="startGame">
             <v-slider
               label="Vidas"
-              v-model="lives"
+              v-model="state.lives"
               min="1"
               max="5"
               thumb-label="always"
@@ -20,14 +20,17 @@
               name="jogador"
               filled
               label="Nome do jogador"
-              :items="names"
-              v-model="playerName"
-              :search-input.sync="searchPlayer"
+              :items="state.names"
+              v-model="state.playerName"
+              :search-input.sync="state.searchPlayer"
               append-icon="fa-plus"
               @click:append="addPlayer"
             />
 
-            <PlayersList :players="players" />
+            <PlayersList
+              :players="state.players"
+              @removePlayer="removePlayer"
+            />
 
             <v-btn type="submit" color="primary" block large>começar</v-btn>
           </v-form>
@@ -39,7 +42,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import { value } from 'vue-function-api'
+import { reactive, onMounted } from '@vue/composition-api'
 import { Player, createPlayer } from '@/model/Player'
 import PlayersList from '@/components/PlayersList.vue'
 import { useRouter } from '../router'
@@ -51,62 +54,72 @@ export default Vue.extend({
     PlayersList,
   },
   setup() {
-    const lives = value(3)
-    const playerName = value('')
-    const searchPlayer = value('')
-    const players = value<Player[]>([])
-    const names = value([
-      'Adilson',
-      'Batista',
-      'Celso',
-      'Danilo',
-      'Euller',
-      'Lucao',
-      'JMoniz',
-      'JCarlos',
-      'Todynho',
-      'Wendler',
-    ])
+    const store = useStore()
+    const state = reactive({
+      lives: 3,
+      playerName: '',
+      searchPlayer: '',
+      players: [] as Player[],
+      names: [
+        'Adilson',
+        'Batista',
+        'Celso',
+        'Danilo',
+        'Euller',
+        'Lucao',
+        'JMoniz',
+        'JCarlos',
+        'Todynho',
+        'Wendler',
+      ],
+    })
+
+    onMounted(() => {
+      if (store.state.game.players.length !== 0) {
+        const router = useRouter()
+        router.push({ name: 'game' })
+      }
+    })
 
     function addPlayer() {
-      if (playerName.value !== '') {
-        const player = createPlayer(playerName.value)
-        players.value = [...players.value, player]
-        playerName.value = ''
+      if (state.playerName !== '') {
+        const player = createPlayer(state.playerName)
+        state.players = [...state.players, player]
+        state.playerName = ''
         return
       }
 
-      const player = createPlayer(searchPlayer.value)
-      players.value = [...players.value, player]
-      searchPlayer.value = ''
+      const player = createPlayer(state.searchPlayer)
+      state.players = [...state.players, player]
+      state.searchPlayer = ''
     }
 
     function startGame() {
-      players.value = players.value.map(
+      state.players = state.players.map(
         (player): Player => {
           return {
             ...player,
-            lives: lives.value,
+            lives: state.lives,
           }
         }
       )
 
-      const game = createGame(players.value, lives.value)
-      const store = useStore()
+      const game = createGame(state.players, state.lives)
       store.commit('setGame', game)
 
       const router = useRouter()
       router.push({ name: 'game' })
     }
 
+    function removePlayer(position: number) {
+      state.players = state.players.filter((_, index) => position !== index)
+    }
+
     return {
-      lives,
-      playerName,
-      players,
+      state,
       addPlayer,
       startGame,
-      names,
-      searchPlayer,
+      removePlayer,
     }
   },
 })

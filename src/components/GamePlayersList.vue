@@ -2,8 +2,8 @@
   <v-col cols="12">
     <v-card class="border-top" elevation="4">
       <v-list two-line>
-        <template v-for="player in game.players">
-          <v-list-item :key="player.name" :inactive="player.lives !== 1">
+        <template v-for="(player, i) in game.players">
+          <v-list-item :key="i" :inactive="player.lives !== 1">
             <v-list-item-content>
               <v-list-item-title v-text="player.name" />
             </v-list-item-content>
@@ -34,7 +34,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import { value, computed } from 'vue-function-api'
+import { computed } from '@vue/composition-api'
 import { useStore } from '../store'
 import { Player } from '../model/Player'
 

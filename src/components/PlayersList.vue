@@ -5,6 +5,9 @@
       <v-list-item-content>
         <v-list-item-title v-text="player.name"></v-list-item-title>
       </v-list-item-content>
+      <v-list-item-action @click="$emit('removePlayer', i)">
+        <v-icon>fa-trash</v-icon>
+      </v-list-item-action>
     </v-list-item>
   </v-list>
 </template>

@@ -1,9 +1,9 @@
 export type Player = {
-  name: String
+  name: string
   lives: number
 }
 
-export function createPlayer(name: String, lives: number = 3): Player {
+export function createPlayer(name: string, lives: number = 3): Player {
   return {
     name,
     lives: lives,
